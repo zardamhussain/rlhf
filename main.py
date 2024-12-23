@@ -57,13 +57,22 @@ total_pages = math.ceil(total_images / ITEMS_PER_PAGE) if ITEMS_PER_PAGE else 1
 # Pagination Controls
 col_prev, col_page, col_next = st.columns([1, 2, 1])
 
-with col_prev:
-    if st.button("Previous") and current_page > 1:
-        st.session_state.page -= 1
 
+def decrement_page():
+    st.session_state.page -= 1
+
+def increment_page():
+    st.session_state.page += 1
+
+with col_prev:
+    prev_disabled = current_page <= 1
+    if st.button("Previous", key="prev_button", disabled=prev_disabled, on_click=decrement_page):
+        pass
+    
 with col_next:
-    if st.button("Next") and current_page < total_pages:
-        st.session_state.page += 1
+    next_disabled = current_page >= total_pages
+    if st.button("Next", key="next_button", disabled=next_disabled, on_click=increment_page):
+        pass
 
 st.markdown(f"**Page {current_page} of {total_pages}**")
 

@@ -4,6 +4,7 @@ from PIL import Image
 from io import BytesIO
 import math
 
+
 # Configuration
 DATA_URL = "https://dev.cosmi.skin/admin/get-image"  # Replace with your data source URL
 POST_API_URL = "https://dev.cosmi.skin/admin/save-image"  # Replace with your POST API URL

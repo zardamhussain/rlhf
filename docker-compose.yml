@@ -6,3 +6,6 @@ services:
     container_name: cosmi-rlhf
     ports:
       - "8501:8501"
+    environment:
+      - "APPWRITE_API_KEY=${APPWRITE_API_KEY}"
+      - "APPWRITE_PROJECT_ID=${APPWRITE_PROJECT_ID}"

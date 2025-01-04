@@ -1,12 +1,13 @@
 import os
 import time
+from typing import Dict, List, Tuple
 from PIL import Image, ImageFile
 from appwrite_client import client
 from appwrite.id import ID
 from appwrite.services.storage import Storage
 from appwrite.input_file import InputFile
 from appwrite.query import Query
-from db import check_image_exists, create_image_document, is_image_labled
+from db import check_image_exists, create_image_document, get_image_data
 import io
 
 images_storage_id = "676ac08e00295a53cf2e"
@@ -63,7 +64,7 @@ def upload_files_from_folder(folder_path, storage, bucket_id):
 #         print(f"Adding {file['name']} to database", file['$id'])
 #         create_image_document(file['$id'])
 
-def list_images(offset, limit):
+def list_images(offset, limit)-> Tuple[int, List[Tuple[str,Dict]]]:
     try:
         response = storage.list_files(bucket_id=images_storage_id, queries=[Query.offset(offset), Query.limit(limit)])
         image_ids = []
@@ -73,10 +74,9 @@ def list_images(offset, limit):
                 create_image_document(file['$id'])
                 image_ids.append((file['$id'], False))
             else:
-
-                image_ids.append((file['$id'], is_image_labled(file['$id']))) 
+                image_ids.append((file['$id'], get_image_data(file['$id']))) 
         
-        # total_count, [(image_id, isLabled)]
+        # total_count, [(image_id, image_data)]
         return response["total"], image_ids
     
     except Exception as e:

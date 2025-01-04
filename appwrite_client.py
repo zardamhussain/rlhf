@@ -1,8 +1,8 @@
 from appwrite.client import Client
 import os
-# from dotenv import load_dotenv
+from dotenv import load_dotenv
 
-# load_dotenv()
+load_dotenv()
 
 client = Client()
 client.set_endpoint('https://cloud.appwrite.io/v1')

@@ -10,6 +10,8 @@ databases = Databases(client)
 imagesDatabaseId = "676ac66c1ad26ff6b85d"
 imagesCollectionId = "676ac66d428f98c5ed1a"
 
+cache = {}
+
 def create_document(database_id, collection_id, data, document_id = ID.unique()):
     try:
         result = databases.create_document(
@@ -54,5 +56,15 @@ def update_image_labled(image_id, isLabled, human_score):
                 "human_score": json.dumps(human_score),
             }
         )
+        if image_id in cache:
+            del cache[image_id]
     except Exception as e:
         raise RequestException()
+    
+def get_image_data(image_id)->dict:
+    if image_id in cache:
+        return cache[image_id]
+    result = databases.list_documents(database_id=imagesDatabaseId, collection_id=imagesCollectionId, queries=[Query.equal('image_id', image_id)])
+    cache[image_id] = result['documents'][0]
+    return cache[image_id]
+    

@@ -1,3 +1,4 @@
+import json
 import streamlit as st # type: ignore
 import requests
 import math
@@ -61,7 +62,9 @@ for row in range(rows):
     for col_index, col in enumerate(cols):
         idx = row * cols_per_row + col_index
         if idx < len(image_ids):
-            image_id, is_marked = image_ids[idx]
+            image_id, image_data = image_ids[idx]
+
+            is_marked = image_data.get("isLabled", False)
 
             # Check if the image has been rated in the current session
             if is_marked == True or image_id in st.session_state.rated_images:
@@ -77,22 +80,22 @@ for row in range(rows):
                     st.success("**Already Rated**")
                 else:
                     with st.form(key=f"form_{image_id}"):
+                        llm_response = json.loads(image_data["llm_response"])
                         st.write("**Rate the following facial features:**")
-                        oiliness = st.slider("Oiliness", 0, 100, 50, key=f"oiliness_{image_id}")
-                        acne = st.slider("Acne", 0, 100, 50, key=f"acne_{image_id}")
-                        pores = st.slider("Pores", 0, 100, 50, key=f"pores_{image_id}")
-                        skin_tone = st.slider("Skin Tone", 0, 100, 50, key=f"skin_tone_{image_id}")
-                        hydration = st.slider("Hydration", 0, 100, 50, key=f"hydration_{image_id}")
-                        wrinkle = st.slider("Wrinkle", 0, 100, 50, key=f"wrinkle_{image_id}")
-                        redness = st.slider("Redness", 0, 100, 50, key=f"redness_{image_id}")
-                        dark_circles = st.slider("Dark Circles", 0, 100, 50, key=f"dark_circles_{image_id}")
-                        skin_age = st.slider("Skin Age", 0, 100, 50, key=f"skin_age_{image_id}")
+                        oiliness = st.slider("Oiliness", 0, 100, int(llm_response.get("Oiliness", 50)), key=f"oiliness_{image_id}")
+                        acne = st.slider("Acne", 0, 100, int(llm_response.get("Acne", 50)), key=f"acne_{image_id}")
+                        pores = st.slider("Pores", 0, 100, int(llm_response.get("Pores", 50)), key=f"pores_{image_id}")
+                        skin_tone = st.slider("Skin Tone", 0, 100, int(llm_response.get("Skin Tone", 50)), key=f"skin_tone_{image_id}")
+                        hydration = st.slider("Hydration", 0, 100, int(llm_response.get("Hydration", 50)), key=f"hydration_{image_id}")
+                        wrinkle = st.slider("Wrinkle", 0, 100, int(llm_response.get("Wrinkle", 50)), key=f"wrinkle_{image_id}")
+                        redness = st.slider("Redness", 0, 100, int(llm_response.get("Redness", 50)), key=f"redness_{image_id}")
+                        dark_circles = st.slider("Dark Circles", 0, 100, int(llm_response.get("Dark Circles", 50)), key=f"dark_circles_{image_id}")
+                        skin_age = st.slider("Skin Age", 0, 100, int(llm_response.get("Skin Age", 50)), key=f"skin_age_{image_id}")
                         
                         submit_button = st.form_submit_button(label='Submit')
 
                         if submit_button:
                             payload = {
-                                "human_score": {
                                     "Oiliness": oiliness,
                                     "Acne": acne,
                                     "Pores": pores,
@@ -103,13 +106,13 @@ for row in range(rows):
                                     "Dark Circles": dark_circles,
                                     "Skin Age": skin_age
                                 }
-                            }
                             
                             try:
                                 update_image_labled(image_id, True, payload)
                                 st.success(f"Data for Image {offset + idx + 1} submitted successfully!")
                                 # Update local state to mark the image as rated
                                 st.session_state.rated_images.add(image_id)
+                                st.rerun()
                             except requests.exceptions.RequestException as e:
                                 st.error(f"Failed to submit data: {e}")
                 

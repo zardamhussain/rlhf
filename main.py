@@ -91,7 +91,9 @@ for row in range(rows):
                         redness = st.slider("Redness", 0, 100, int(llm_response.get("Redness", 50)), key=f"redness_{image_id}")
                         dark_circles = st.slider("Dark Circles", 0, 100, int(llm_response.get("Dark Circles", 50)), key=f"dark_circles_{image_id}")
                         skin_age = st.slider("Skin Age", 0, 100, int(llm_response.get("Skin Age", 50)), key=f"skin_age_{image_id}")
-                        
+                        skin_type = st.text_input("Skin Type", value=llm_response.get("Skin Type", "Unknown"), key=f"skin_type_{image_id}")
+                        face_shape = st.text_input("Face Shape", value=llm_response.get("Face Shape", "Unknown"), key=f"face_shape_{image_id}")
+                        color_code = st.text_input("Color Code", value=llm_response.get("Color Code", "Unknown"), key=f"color_code_{image_id}")
                         submit_button = st.form_submit_button(label='Submit')
 
                         if submit_button:
@@ -104,7 +106,10 @@ for row in range(rows):
                                     "Wrinkle": wrinkle,
                                     "Redness": redness,
                                     "Dark Circles": dark_circles,
-                                    "Skin Age": skin_age
+                                    "Skin Age": skin_age,
+                                    "Skin Type": skin_type,
+                                    "Face Shape": face_shape,
+                                    "Color Code": color_code
                                 }
                             
                             try:
